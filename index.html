@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surrogate Solutions</title>
+    <link rel="icon" href="tesseract.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000000;
+            color: #00ff00;
+            font-family: 'Fira Code', monospace;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* CRT Monitor Effect - Fixed for smoother rendering */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        /* Scanline Effect - Optimized for performance */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                rgba(0, 255, 0, 0.03) 50%, 
+                transparent 50%);
+            background-size: 100% 2px;
+            pointer-events: none;
+            z-index: 10;
+            animation: scanline 8s linear infinite;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            border: 1px solid #00ff00;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+            background-color: rgba(0, 0, 0, 0.9);
+            /* Force GPU acceleration */
+            transform: translateZ(0);
+        }
+        
+        .logo {
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .logo-text {
+            font-size: 3rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #00ff00;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+            font-family: 'Fira Code', monospace;
+            min-height: 72px; /* Prevent layout shift during typing */
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: #00cc00;
+            text-transform: uppercase;
+            font-weight: normal;
+            border-top: 1px solid #00ff00;
+            border-bottom: 1px solid #00ff00;
+            padding: 8px 0;
+            margin: 0 auto;
+            width: 80%;
+            font-family: 'Fira Code', monospace;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .gif-container {
+            width: 360px;
+            height: 360px;
+            margin: 0 auto 30px;
+            position: relative;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .gif-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            gap: 10px;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .nav-link {
+            color: #00cc00;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border: 1px solid #00ff00;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+            font-weight: 450;
+            white-space: nowrap;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
+            transition: all 0.5s ease;
+        }
+        
+        .nav-link:hover {
+            color: #000000;
+            background-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+        }
+        
+        .nav-link:hover::before {
+            left: 100%;
+        }
+        
+        .footer {
+            margin-top: auto;
+            padding: 15px;
+            font-size: 0.85rem;
+            color: #008800;
+            letter-spacing: 1px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+            font-family: 'Fira Code', monospace;
+            border-top: 1px solid #00ff00;
+            width: 100%;
+            text-align: center;
+            font-weight: 400;
+        }
+        
+        /* Blinking cursor effect - Made bigger */
+        .cursor {
+            display: inline-block;
+            width: 10px;  /* Increased from 6px */
+            height: 1.4rem; /* Increased from 1rem */
+            background-color: #00ff00;
+            margin-left: 4px;
+            animation: blink 1s infinite steps(1);
+            vertical-align: middle;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        @keyframes scanline {
+            from { background-position: 0 0; }
+            to { background-position: 0 100%; }
+        }
+        
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        /* New optimized glitch effect */
+        @keyframes glitch {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            50% { transform: translateX(2px); }
+            75% { transform: translateX(-1px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .glitch-effect {
+            animation: glitch 0.3s linear;
+        }
+        
+        @media (max-width: 700px) {
+            .logo-text {
+                font-size: 2rem;
+                min-height: 48px; /* Adjusted for mobile */
+            }
+            
+            .tagline {
+                font-size: 0.9rem;
+                letter-spacing: 2px;
+                width: 90%;
+            }
+            
+            .gif-container {
+                width: 280px;
+                height: 280px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .nav-link {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+
+            /* Adjust cursor for mobile */
+            .cursor {
+                width: 8px;
+                height: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .nav-link {
+                width: 180px;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1 class="logo-text" id="typed-text"><span class="cursor"></span></h1>
+            <div class="tagline" id="tagline">WEBMASTER SERVICES SINCE 2025</div>
+        </div>
+        
+        <div class="gif-container">
+            <img src="tesseract.gif" alt="Animated Tesseract">
+        </div>
+        
+        <div class="nav-links">
+            <a href="about.html" class="nav-link">ABOUT</a>
+            <a href="services.html" class="nav-link">SERVICES</a>
+            <a href="contact.html" class="nav-link">CONTACT</a>
+        </div>
+        
+        <div class="footer">
+            © 2025 SURROGATE SOLUTIONS
+        </div>
+    </div>
+    
+    <script>
+        // Typing animation 
+        document.addEventListener('DOMContentLoaded', function() {
+            const text = "SURROGATE SOLUTIONS";
+            const typedTextElement = document.getElementById('typed-text');
+            const taglineElement = document.getElementById('tagline');
+            const cursor = document.querySelector('.cursor');
+            const container = document.querySelector('.container');
+            
+            // Initially hide all elements except the typing text
+            taglineElement.style.opacity = 0;
+            document.querySelector('.gif-container').style.opacity = 0;
+            document.querySelector('.nav-links').style.opacity = 0;
+            document.querySelector('.footer').style.opacity = 0;
+            
+            // Remove the cursor initially
+            cursor.style.display = 'none';
+            
+            let i = 0;
+            const typingSpeed = 100; // milliseconds per character
+            
+            function typeWriter() {
+                if (i < text.length) {
+                    // Add letter by letter
+                    if (i === 0) {
+                        typedTextElement.innerHTML = text.charAt(i);
+                    } else {
+                        typedTextElement.innerHTML += text.charAt(i);
+                    }
+                    i++;
+                    setTimeout(typeWriter, typingSpeed);
+                } else {
+                    // Add cursor at the end when typing is complete
+                    typedTextElement.appendChild(cursor);
+                    cursor.style.display = 'inline-block';
+                    
+                    // Start the other animations
+                    startAnimations();
+                }
+            }
+            
+            // Start the typing animation immediately
+            typeWriter();
+            
+            // Optimized glitch effect - using CSS animation instead of direct transform
+            setInterval(() => {
+                if (Math.random() > 0.8) {
+                    container.classList.add('glitch-effect');
+                    setTimeout(() => {
+                        container.classList.remove('glitch-effect');
+                    }, 300);
+                }
+            }, 5000);
+            
+            function startAnimations() {
+                // Fade in all elements together
+                taglineElement.style.animation = 'fadeIn 1.5s ease-out forwards';
+                document.querySelector('.gif-container').style.animation = 'fadeIn 1.5s ease-out forwards';
+                document.querySelector('.nav-links').style.animation = 'fadeIn 1.5s ease-out forwards';
+                document.querySelector('.footer').style.animation = 'fadeIn 1.5s ease-out forwards';
+            }
+        });
+    </script>
+</body>
+</html>

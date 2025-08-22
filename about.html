@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Surrogate Solutions</title>
+    <link rel="icon" href="tesseract.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000000;
+            color: #00ff00;
+            font-family: 'Fira Code', monospace;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* CRT Monitor Effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        /* Scanline Effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                rgba(0, 255, 0, 0.03) 50%, 
+                transparent 50%);
+            background-size: 100% 2px;
+            pointer-events: none;
+            z-index: 10;
+            animation: scanline 8s linear infinite;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            border: 1px solid #00ff00;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+            background-color: rgba(0, 0, 0, 0.9);
+            transform: translateZ(0);
+        }
+        
+        .logo {
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .logo-text {
+            font-size: 3rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #00ff00;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: #00cc00;
+            text-transform: uppercase;
+            font-weight: normal;
+            border-top: 1px solid #00ff00;
+            border-bottom: 1px solid #00ff00;
+            padding: 8px 0;
+            margin: 0 auto;
+            width: 80%;
+            font-family: 'Fira Code', monospace;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            gap: 10px;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .nav-link {
+            color: #00cc00;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border: 1px solid #00ff00;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+            font-weight: 450;
+            white-space: nowrap;
+        }
+        
+        .nav-link.active {
+            color: #000000;
+            background-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
+            transition: all 0.5s ease;
+        }
+        
+        .nav-link:hover {
+            color: #000000;
+            background-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+        }
+        
+        .nav-link:hover::before {
+            left: 100%;
+        }
+        
+        /* Content Area Styles - Simplified */
+        .content-container {
+            text-align: center;
+            margin: 0 auto 40px;
+            padding: 0;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .content-header {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        .about-text {
+            color: #00cc00;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .purpose-section {
+            margin: 30px 0;
+            padding: 0;
+        }
+        
+        .purpose-header {
+            color: #00ff00;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .purpose-icon {
+            font-size: 1.5rem;
+        }
+        
+        .purpose-text {
+            color: #00cc00;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .footer {
+            margin-top: auto;
+            padding: 15px;
+            font-size: 0.85rem;
+            color: #008800;
+            letter-spacing: 1px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+            font-family: 'Fira Code', monospace;
+            border-top: 1px solid #00ff00;
+            width: 100%;
+            text-align: center;
+            font-weight: 400;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scanline {
+            from { background-position: 0 0; }
+            to { background-position: 0 100%; }
+        }
+        
+        .glitch-effect {
+            animation: glitch 0.3s linear;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            50% { transform: translateX(2px); }
+            75% { transform: translateX(-1px); }
+            100% { transform: translateX(0); }
+        }
+        
+        @media (max-width: 700px) {
+            .logo-text {
+                font-size: 2rem;
+            }
+            
+            .tagline {
+                font-size: 0.9rem;
+                letter-spacing: 2px;
+                width: 90%;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .nav-link {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .content-header {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .nav-link {
+                width: 180px;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+            
+            .purpose-header {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1 class="logo-text">SURROGATE SOLUTIONS</h1>
+            <div class="tagline">WEBMASTER SERVICES SINCE 2025</div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">HOME</a>
+            <a href="about.html" class="nav-link active">ABOUT</a>
+            <a href="services.html" class="nav-link">SERVICES</a>
+            <a href="contact.html" class="nav-link">CONTACT</a>
+        </div>
+        
+        <!-- ABOUT CONTENT -->
+        <div class="content-container">
+            <h3 class="content-header">About</h3>
+            
+            <p class="about-text">
+               <i><b>A wise man once said, "everyone should have a website."</b></i>
+            </p>
+			
+			<p>This is the mission of Surrogate Solutions: a one-man operation dedicated to this singular goal. Perhaps nostalgic for the bygone days of Web 1.0 and early Web 2.0, especially in these latter days of a bloated and glutted web, I believe that the ability to create and market simple, minimalist static web pages, ones that are as aesthetically pleasing as they are intuitive, is not only ambitious but <i>radical.</i></p>
+            
+            <div class="purpose-section">
+                <h3 class="purpose-header">
+                    <i class="purpose-icon fas fa-crosshairs"></i>
+                    The Mission
+                </h3>
+                <p class="purpose-text">
+                    To deliver simple and cost efficiant web solutions with creative design and easy fuctionality, helping individuals, small businesses, and others establish an online presence.
+                </p>
+            </div>
+            
+        <!-- END ABOUT CONTENT -->
+        
+        <div class="footer">
+            © 2025 SURROGATE SOLUTIONS
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start the animations
+            startAnimations();
+            
+            const container = document.querySelector('.container');
+            
+            // Optimized glitch effect
+            setInterval(() => {
+                if (Math.random() > 0.8) {
+                    container.classList.add('glitch-effect');
+                    setTimeout(() => {
+                        container.classList.remove('glitch-effect');
+                    }, 300);
+                }
+            }, 5000);
+            
+            function startAnimations() {
+                // Fade in all elements
+                document.querySelector('.logo').style.animation = 'fadeIn 1.5s ease-out forwards';
+                document.querySelector('.nav-links').style.animation = 'fadeIn 1.5s ease-out forwards';
+                document.querySelector('.content-container').style.animation = 'fadeIn 1.5s ease-out forwards';
+                document.querySelector('.footer').style.animation = 'fadeIn 1.5s ease-out forwards';
+            }
+        });
+    </script>
+</body>
+</html>

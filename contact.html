@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Surrogate Solutions</title>
+    <link rel="icon" href="tesseract.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000000;
+            color: #00ff00;
+            font-family: 'Fira Code', monospace;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* CRT Monitor Effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        /* Scanline Effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                rgba(0, 255, 0, 0.03) 50%, 
+                transparent 50%);
+            background-size: 100% 2px;
+            pointer-events: none;
+            z-index: 10;
+            animation: scanline 8s linear infinite;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            border: 1px solid #00ff00;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+            background-color: rgba(0, 0, 0, 0.9);
+            transform: translateZ(0);
+        }
+        
+        .logo {
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .logo-text {
+            font-size: 3rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #00ff00;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: #00cc00;
+            text-transform: uppercase;
+            font-weight: normal;
+            border-top: 1px solid #00ff00;
+            border-bottom: 1px solid #00ff00;
+            padding: 8px 0;
+            margin: 0 auto;
+            width: 80%;
+            font-family: 'Fira Code', monospace;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            gap: 10px;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .nav-link {
+            color: #00cc00;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border: 1px solid #00ff00;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+            font-weight: 450;
+            white-space: nowrap;
+        }
+        
+        .nav-link.active {
+            color: #000000;
+            background-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
+            transition: all 0.5s ease;
+        }
+        
+        .nav-link:hover {
+            color: #000000;
+            background-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+        }
+        
+        .nav-link:hover::before {
+            left: 100%;
+        }
+        
+        /* Content Area Styles */
+        .content-container {
+            text-align: center;
+            margin: 0 auto 40px;
+            padding: 0;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .content-header {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        .intro-text {
+            color: #00cc00;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Form Styles */
+        .contact-form {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00cc00;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(0, 30, 0, 0.3);
+            border: 1px solid #00cc00;
+            color: #00ff00;
+            font-family: 'Fira Code', monospace;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            border-color: #00ff00;
+        }
+        
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .btn-submit {
+            background-color: transparent;
+            color: #00cc00;
+            border: 1px solid #00ff00;
+            padding: 12px 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Fira Code', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-submit:hover {
+            background-color: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+        }
+        
+        .contact-info {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #00cc00;
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #00cc00;
+        }
+        
+        .info-icon {
+            color: #00ff00;
+            font-size: 1.2rem;
+        }
+        
+        .footer {
+            margin-top: auto;
+            padding: 15px;
+            font-size: 0.85rem;
+            color: #008800;
+            letter-spacing: 1px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+            font-family: 'Fira Code', monospace;
+            border-top: 1px solid #00ff00;
+            width: 100%;
+            text-align: center;
+            font-weight: 400;
+        }
+        
+        /* Form status messages */
+        .form-status {
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid #00ff00;
+            background-color: rgba(0, 30, 0, 0.3);
+            display: none;
+        }
+        
+        .form-status.success {
+            color: #00ff00;
+        }
+        
+        .form-status.error {
+            color: #ff3333;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scanline {
+            from { background-position: 0 0; }
+            to { background-position: 0 100%; }
+        }
+        
+        .glitch-effect {
+            animation: glitch 0.3s linear;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            <｜place▁holder▁no▁796｜> { transform: translateX(2px); }
+            75% { transform: translateX(-1px); }
+            100% { transform: translateX(0); }
+        }
+        
+        @media (max-width: 700px) {
+            .logo-text {
+                font-size: 2rem;
+            }
+            
+            .tagline {
+                font-size: 0.9rem;
+                letter-spacing: 2px;
+                width: 90%;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .nav-link {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .content-header {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .nav-link {
+                width: 180px;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1 class="logo-text">SURROGATE SOLUTIONS</h1>
+            <div class="tagline">WEBMASTER SERVICES SINCE 2025</div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">HOME</a>
+            <a href="about.html" class="nav-link">ABOUT</a>
+            <a href="services.html" class="nav-link">SERVICES</a>
+            <a href="contact.html" class="nav-link active">CONTACT</a>
+        </div>
+        
+        <!-- CONTACT CONTENT -->
+        <div class="content-container">
+            <h3 class="content-header">Contact</h3>
+            
+            <p class="intro-text">
+                Have questions about our services? Want a quote? Reach out to us and we'll get back to you as soon as possible.
+            </p>
+            
+            <!-- Formspree Form -->
+            <form class="contact-form" id="contactForm" action="https://formspree.io/f/manbrjdn" method="POST">
+                <div class="form-group">
+                    <label for="name" class="form-label">YOUR NAME</label>
+                    <input type="text" id="name" name="name" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">EMAIL ADDRESS</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject" class="form-label">SUBJECT</label>
+                    <input type="text" id="subject" name="subject" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message" class="form-label">MESSAGE</label>
+                    <textarea id="message" name="message" class="form-textarea" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn-submit">SEND MESSAGE</button>
+                
+                <!-- Form status messages -->
+                <div id="form-status" class="form-status" style="display: none;"></div>
+            </form>
+            
+            <div class="contact-info">
+                <div class="info-item">
+                    <i class="info-icon fas fa-envelope"></i>
+                    <span>surrogatesolutions@proton.me</span>
+                </div>
+                
+                <div class="info-item">
+                    <i class="info-icon fas fa-clock"></i>
+                    <span>Response within 24 hours</span>
+                </div>
+            </div>
+        </div>
+        <!-- END CONTACT CONTENT -->
+        
+        <div class="footer">
+            © 2025 SURROGATE SOLUTIONS
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start the animations
+            startAnimations();
+            
+            const container = document.querySelector('.container');
+            const contactForm = document.getElementById('contactForm');
+            const formStatus = document.getElementById('form-status');
+            
+            // Handle form submission
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Simple form validation
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value;
+                
+                if (name && email && subject && message) {
+                    // Show loading state
+                    const submitBtn = contactForm.querySelector('.btn-submit');
+                    submitBtn.textContent = 'SENDING...';
+                    submitBtn.disabled = true;
+                    
+                    // Submit the form to Formspree
+                    fetch(contactForm.action, {
+                        method: 'POST',
+                        body: new FormData(contactForm),
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Show success message
+                            formStatus.textContent = 'Message sent successfully! We will get back to you soon.';
+                            formStatus.className = 'form-status success';
+                            formStatus.style.display = 'block';
+                            contactForm.reset();
+                        } else {
+                            throw new Error('Form submission failed');
+                        }
+                    })
+                    .catch(error => {
+                        // Show error message
+                        formStatus.textContent = 'There was a problem sending your message. Please try again or email us directly.';
+                        formStatus.className = 'form-status error';
+                        formStatus.style.display = 'block';
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        submitBtn.textContent = 'SEND MESSAGE';
+                        submitBtn.disabled = false;
+                        
+                        // Hide status message after 5 seconds
+                        setTimeout(() => {
+                            formStatus.style.display = 'none';
+                        }, 5000);
+                    });
+                } else {
+                    // Show validation error
+                    formStatus.textContent = 'Please fill in all fields.';
+                    formStatus.className = 'form-status error';
+                    formStatus.style.display = 'block';
+                    
+                    // Hide status message after 3 seconds
+                    setTimeout(() => {
+                        formStatus.style.display = 'none';
+                    }, 3000);
+                }
+            });
+            
+            // Optimized glitch effect
+            setInterval(() => {
+                if (Math.random() > 0.8) {
+                    container.classList.add('glitch-effect');
+                    setTimeout(() => {
+                        container.classList.remove('glitch-effect');
+                    }, 300);
+                }
+            }, 5000);
+            
+            function startAnimations() {
+                // Fade in all elements
+                document.querySelector('.logo').style.animation = 'fadeIn 1.5s ease-out forwards';
+                document.querySelector('.nav-links').style.animation = 'fadeIn 1.5s ease-out forwards';
+                document.querySelector('.content-container').style.animation = 'fadeIn 1.5s ease-out forwards';
+                document.querySelector('.footer').style.animation = 'fadeIn 1.5s ease-out forwards';
+            }
+        });
+    </script>
+</body>
+</html>
